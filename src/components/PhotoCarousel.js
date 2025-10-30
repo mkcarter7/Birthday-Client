@@ -8,7 +8,7 @@ export default function PhotoCarousel() {
   const { user, userLoading } = useAuth();
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [liking, setLiking] = useState(new Set());
+  // Likes disabled
   const [hiddenIds, setHiddenIds] = useState(new Set());
 
   const handleImageError = (photoId) => {
@@ -19,42 +19,7 @@ export default function PhotoCarousel() {
     });
   };
 
-  const handleLike = async (photoId) => {
-    if (liking.has(photoId)) return;
-
-    setLiking((prev) => new Set(prev).add(photoId));
-    try {
-      const res = await fetch(`/api/photos/${photoId}/like`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${await user.getIdToken()}`,
-        },
-      });
-      if (res.ok) {
-        // Refresh photos to get updated like count
-        const photosRes = await fetch('/api/photos');
-        if (photosRes.ok) {
-          const data = await photosRes.json();
-          const list = Array.isArray(data) ? data : data?.photos || [];
-          const filtered = list.filter((p) => {
-            if (!p) return false;
-            if (p.deleted === true || p.is_deleted === true) return false;
-            const src = p.image || p.url;
-            return typeof src === 'string' && src.length > 0;
-          });
-          setPhotos(filtered);
-        }
-      }
-    } catch (error) {
-      console.error('Like failed:', error);
-    } finally {
-      setLiking((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(photoId);
-        return newSet;
-      });
-    }
-  };
+  // Likes disabled – no handler
 
   useEffect(() => {
     let isMounted = true;
@@ -139,9 +104,7 @@ export default function PhotoCarousel() {
           const src = photo.image || photo.url;
           const uploader = photo.uploaded_by?.full_name || photo.uploaded_by?.username || photo.uploader_name;
           const photoId = photo.id;
-          const likeCount = photo.likes_count || 0;
-          const isLiked = photo.is_liked || false;
-          const isLiking = liking.has(photoId);
+          // Like UI removed
           if (hiddenIds.has(photoId)) return null;
 
           return (
@@ -149,49 +112,7 @@ export default function PhotoCarousel() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt={`Party ${i + 1}`} onError={() => handleImageError(photoId)} style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }} />
 
-              {/* Like button overlay */}
-              <button
-                type="button"
-                onClick={() => handleLike(photoId)}
-                disabled={isLiking}
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  background: 'rgba(0,0,0,0.6)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 32,
-                  height: 32,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: isLiked ? '#ff6b6b' : 'white',
-                  cursor: isLiking ? 'not-allowed' : 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                {isLiking ? '⏳' : '❤️'}
-              </button>
-
-              {/* Like count */}
-              {likeCount > 0 && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    left: 8,
-                    background: 'rgba(0,0,0,0.6)',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: 12,
-                    fontSize: '12px',
-                    fontWeight: '600',
-                  }}
-                >
-                  {likeCount}
-                </div>
-              )}
+              {/* Likes removed */}
 
               {/* Uploader info */}
               {uploader && <div style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.7)', color: 'white', fontSize: '12px', fontWeight: '600' }}>by {uploader}</div>}

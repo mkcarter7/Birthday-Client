@@ -15,8 +15,8 @@ const tiles = [
   { href: '/guestbook', label: 'Guest Book', color: 'teal', icon: '💬' },
   { href: '/timeline', label: 'Timeline', color: 'orange', icon: '🕑' },
   { href: '/location', label: 'Location', color: 'emerald', icon: '📍' },
-  { href: '/games', label: 'Play Games & Earn Points', color: 'gold', icon: '🏆', wide: true },
-  { href: '/rsvp', label: 'RSVP for Party', color: 'rose', icon: '👥', wide: true },
+  { href: '/games', label: 'Play Games & Earn Points', color: 'gold', icon: '🏆' },
+  { href: '/rsvp', label: 'RSVP for Party', color: 'rose', icon: '👥' },
 ];
 
 export default function Home() {

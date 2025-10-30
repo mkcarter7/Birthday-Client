@@ -7,7 +7,14 @@ import { signOut } from '../utils/auth';
 
 export default function NavBar() {
   return (
-    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      variant="dark"
+      style={{
+        background: 'linear-gradient(135deg, var(--party-secondary), var(--party-accent))',
+      }}
+    >
       <Container>
         <Link passHref href="/" className="navbar-brand">
           {PARTY_CONFIG.name}
