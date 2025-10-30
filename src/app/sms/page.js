@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/PageHeader';
+import { PARTY_CONFIG } from '@/config/party';
 
 const event = {
-  title: "Ivy's 2nd Birthday",
-  date: 'Aug 15, 2025',
-  time: '7:00 PM - 11:00 PM',
+  title: PARTY_CONFIG.name,
+  date: PARTY_CONFIG.date,
+  time: PARTY_CONFIG.time,
   url: typeof window === 'undefined' ? 'https://example.com' : window.location.origin,
 };
 

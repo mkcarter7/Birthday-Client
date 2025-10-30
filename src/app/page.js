@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import PhotoCarousel from '@/components/PhotoCarousel';
+import { PARTY_CONFIG, getPartyDisplayName, getPartyLocation, getPartyTheme } from '@/config/party';
 
 const tiles = [
   { href: '/calendar', label: 'Add to Calendar', color: 'green', icon: '📅' },
@@ -21,9 +23,9 @@ export default function Home() {
   return (
     <main className="page">
       <section className="hero">
-        <div className="hero-icon">🎂</div>
-        <h1 className="hero-title">Ivy&apos;s 2nd Birthday</h1>
-        <p className="hero-subtitle">Join us for an unforgettable celebration!</p>
+        <PhotoCarousel />
+        <h1 className="hero-title">{getPartyDisplayName()}</h1>
+        <p className="hero-subtitle">{PARTY_CONFIG.welcomeMessage}</p>
       </section>
 
       <section className="info-cards">
@@ -31,28 +33,28 @@ export default function Home() {
           <span className="icn">📅</span>
           <div>
             <div className="info-label">Date</div>
-            <div className="info-value">2025-08-15</div>
+            <div className="info-value">{PARTY_CONFIG.date}</div>
           </div>
         </div>
         <div className="info-card">
           <span className="icn">⏰</span>
           <div>
             <div className="info-label">Time</div>
-            <div className="info-value">7:00 PM - 11:00 PM</div>
+            <div className="info-value">{PARTY_CONFIG.time}</div>
           </div>
         </div>
         <div className="info-card">
           <span className="icn">📍</span>
           <div>
             <div className="info-label">Location</div>
-            <div className="info-value">Rooftop Garden Venue, 123 Party Street, New York, NY</div>
+            <div className="info-value">{getPartyLocation()}</div>
           </div>
         </div>
         <div className="info-card">
           <span className="icn">⭐</span>
           <div>
             <div className="info-label">Theme</div>
-            <div className="info-value">Enchanted Garden</div>
+            <div className="info-value">{getPartyTheme()}</div>
           </div>
         </div>
       </section>

@@ -1,11 +1,12 @@
 'use client';
 
 import PageHeader from '@/components/PageHeader';
+import { PARTY_CONFIG } from '@/config/party';
 
 const eventDetails = {
-  title: "Ivy's 2nd Birthday",
-  description: 'Join us for an unforgettable celebration!',
-  location: 'Rooftop Garden Venue, 123 Party Street, New York, NY',
+  title: PARTY_CONFIG.name,
+  description: PARTY_CONFIG.welcomeMessage,
+  location: PARTY_CONFIG.location,
   // Local date-times; adjust as needed
   start: new Date('2025-08-15T19:00:00'),
   end: new Date('2025-08-15T23:00:00'),

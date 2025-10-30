@@ -1,5 +1,7 @@
 :root{
   --bg: radial-gradient(1200px 600px at 50% -100px, #ffffff, #eef2ff 40%, #f4f7ff 60%, #ffffff 100%);
+  /* Background image for front page */
+  --bg-image-url: url('/images/488587979_1480562312917707_8649165224796858869_n.jpg');
   --card-bg:#ffffff;
   --text:#121826;
   --muted:#6b7280;
@@ -8,7 +10,11 @@
 
 html,body{height:100%}
 body{
-  background: var(--bg);
+  /* Layer the themed gradient with the party background image if present */
+  background: var(--bg-image-url), var(--bg);
+  background-repeat: repeat, no-repeat;
+  background-size: auto, cover;
+  background-attachment: fixed, fixed;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
