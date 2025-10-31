@@ -21,14 +21,24 @@ export default function NavBar() {
         </Link>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            {/* CLOSE NAVBAR ON LINK SELECTION: https://stackoverflow.com/questions/72813635/collapse-on-select-react-bootstrap-navbar-with-nextjs-not-working */}
-            <Link className="nav-link" href="/">
-              Home
-            </Link>
-          </Nav>
+          <Nav className="me-auto">{/* Navigation links can be added here */}</Nav>
 
-          <Button variant="danger" onClick={signOut}>
+          <Button
+            onClick={signOut}
+            style={{
+              backgroundColor: '#8b5cf6',
+              borderColor: '#8b5cf6',
+              color: '#fff',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#7c3aed';
+              e.currentTarget.style.borderColor = '#7c3aed';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#8b5cf6';
+              e.currentTarget.style.borderColor = '#8b5cf6';
+            }}
+          >
             Sign Out
           </Button>
         </Navbar.Collapse>

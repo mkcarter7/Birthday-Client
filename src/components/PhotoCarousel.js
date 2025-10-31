@@ -148,9 +148,8 @@ export default function PhotoCarousel() {
   if (!user) {
     return (
       <div className="card" style={{ display: 'grid', gap: 12 }}>
-        <h2 style={{ margin: 0 }}>Party Photos</h2>
         <p className="muted">Sign in to view and share party photos!</p>
-        <button type="button" onClick={signIn} className="tile tile-blue" style={{ height: 48, border: 'none' }}>
+        <button type="button" onClick={signIn} className="tile tile-purple" style={{ height: 48, border: 'none' }}>
           Sign in with Google
         </button>
       </div>
@@ -160,7 +159,6 @@ export default function PhotoCarousel() {
   if (!photos.length) {
     return (
       <div className="card">
-        <h2 style={{ margin: 0 }}>Party Photos</h2>
         <div className="muted">No photos yet. Be the first to share memories!</div>
       </div>
     );
@@ -168,9 +166,6 @@ export default function PhotoCarousel() {
 
   return (
     <div style={{ background: 'transparent', padding: 0 }}>
-      <div style={{ padding: '16px 16px 0' }}>
-        <h2 style={{ margin: 0, color: 'var(--text)' }}>Party Photos</h2>
-      </div>
       <div style={{ position: 'relative', padding: '0 16px', overflow: 'hidden' }}>
         {/* Left Arrow */}
         {canScrollLeft && (

@@ -58,7 +58,7 @@ export default function SmsPage() {
         </label>
         <input id="phone" inputMode="tel" type="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} style={{ padding: 12, borderRadius: 10, border: '1px solid #e5e7eb' }} />
 
-        <button type="button" onClick={onSend} className="tile tile-blue" style={{ height: 56, border: 'none' }} aria-label="Open SMS app with prefilled invite">
+        <button type="button" onClick={onSend} className="tile tile-purple" style={{ height: 56, border: 'none' }} aria-label="Open SMS app with prefilled invite">
           Open SMS with Invite
         </button>
 

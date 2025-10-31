@@ -20,10 +20,27 @@ const tiles = [
 ];
 
 export default function Home() {
+  const weatherDesc = 'Sunny';
+
+  const getWeatherIcon = (desc) => {
+    const lowerDesc = desc.toLowerCase();
+    if (lowerDesc.includes('storm') || lowerDesc.includes('thunder')) return '⛈️';
+    if (lowerDesc.includes('rain') || lowerDesc.includes('shower')) return '🌧️';
+    if (lowerDesc.includes('drizzle')) return '🌦️';
+    if (lowerDesc.includes('snow') || lowerDesc.includes('sleet')) return '❄️';
+    if (lowerDesc.includes('fog') || lowerDesc.includes('mist')) return '🌫️';
+    if (lowerDesc.includes('partly cloudy') || lowerDesc.includes('partly cloud')) return '⛅';
+    if (lowerDesc.includes('cloud') || lowerDesc.includes('overcast')) return '☁️';
+    if (lowerDesc.includes('clear') || lowerDesc.includes('sunny')) return '☀️';
+    if (lowerDesc.includes('wind')) return '💨';
+    return '🌤️'; // Default/unknown
+  };
+
+  const weatherIcon = getWeatherIcon(weatherDesc);
+
   return (
     <main className="page">
       <section className="hero">
-        <PhotoCarousel />
         <h1 className="hero-title">{getPartyDisplayName()}</h1>
         <p className="hero-subtitle">{PARTY_CONFIG.welcomeMessage}</p>
       </section>
@@ -59,11 +76,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="weather">
-        <div className="weather-card">
-          <div className="weather-title">Party Day Weather</div>
-          <div className="weather-temp">75°F</div>
-          <div className="weather-desc">Sunny</div>
+      <section className="countdown-weather-container">
+        <div className="countdown card" style={{ textAlign: 'center' }}>
+          <h2>Party Countdown</h2>
+          <div className="countdown-body">🎉 The Party Has Begun!</div>
+          <p className="muted">Hope you&apos;re having an amazing time!</p>
+        </div>
+
+        <div className="weather">
+          <div className="weather-card">
+            <div className="weather-icon">{weatherIcon}</div>
+            <div className="weather-title">Party Day Weather</div>
+            <div className="weather-temp">75°F</div>
+            <div className="weather-desc">{weatherDesc}</div>
+          </div>
         </div>
       </section>
 
@@ -78,13 +104,9 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="countdown card">
-        <h2>Party Countdown</h2>
-        <div className="countdown-body">🎉 The Party Has Begun!</div>
-        <p className="muted">Hope you&apos;re having an amazing time!</p>
-      </section>
+      <PhotoCarousel />
 
-      <section className="thanks card">
+      <section className="thanks card" style={{ textAlign: 'center' }}>
         <h2>Thank You!</h2>
         <p>Ivy&apos;s 2nd birthday party was absolutely magical thanks to all of you! Your presence, gifts, and memories made this celebration unforgettable.</p>
         <p className="muted">Photos and memories from the party are now available in the gallery.</p>

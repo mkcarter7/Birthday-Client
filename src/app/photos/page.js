@@ -79,7 +79,7 @@ export default function PhotosPage() {
         <div className="card" style={{ display: 'grid', gap: 12 }}>
           <h3>Sign in to upload photos</h3>
           <p>You need to sign in with Google to upload photos to the party gallery.</p>
-          <button type="button" onClick={signIn} className="tile tile-blue" style={{ height: 48, border: 'none' }}>
+          <button type="button" onClick={signIn} className="tile tile-purple" style={{ height: 48, border: 'none' }}>
             Sign in with Google
           </button>
         </div>
@@ -106,7 +106,7 @@ export default function PhotosPage() {
         )}
         <form onSubmit={handleUpload} style={{ display: 'grid', gap: 12 }}>
           <input type="file" name="image" accept="image/*" required style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-          <button type="submit" disabled={uploading} className="tile tile-pink" style={{ height: 48, border: 'none' }}>
+          <button type="submit" disabled={uploading} className="tile tile-purple" style={{ height: 48, border: 'none' }}>
             {uploading ? 'Uploading...' : 'Upload Photo'}
           </button>
         </form>
