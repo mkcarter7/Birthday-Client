@@ -72,3 +72,8 @@ body{
 @media (min-width: 900px){
   .tile-grid{grid-template-columns:repeat(3,1fr)}
 }
+
+/* Hide scrollbar for photo carousel */
+.photo-carousel-scroll::-webkit-scrollbar {
+  display: none;
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/utils/context/authContext';
 import { signIn } from '@/utils/auth';
 
@@ -10,6 +10,8 @@ export default function PhotoCarousel() {
   const [loading, setLoading] = useState(true);
   // Likes disabled
   const [hiddenIds, setHiddenIds] = useState(new Set());
+  const scrollContainerRef = useRef(null);
+  const autoScrollIntervalRef = useRef(null);
 
   const handleImageError = (photoId) => {
     setHiddenIds((prev) => {
@@ -57,6 +59,72 @@ export default function PhotoCarousel() {
     };
   }, [user]);
 
+  // Auto-scroll effect
+  useEffect(() => {
+    if (!photos.length) return;
+
+    let isPaused = false;
+    let container = null;
+    let timeoutId = null;
+    let mouseEnterHandler = null;
+    let mouseLeaveHandler = null;
+
+    // Wait a bit for DOM to be ready
+    timeoutId = setTimeout(() => {
+      container = scrollContainerRef.current;
+      if (!container) return;
+
+      const startAutoScroll = () => {
+        if (autoScrollIntervalRef.current) {
+          clearInterval(autoScrollIntervalRef.current);
+        }
+
+        autoScrollIntervalRef.current = setInterval(() => {
+          if (isPaused || !container) return;
+
+          const { scrollWidth, clientWidth, scrollLeft } = container;
+          // Scroll by 2 photos at a time (each photo is ~50% width, 2 photos = visible width)
+          const scrollDistance = clientWidth; // Scroll by full visible width to show next 2 photos
+
+          // Check if we've reached the end
+          if (scrollLeft + clientWidth >= scrollWidth - 5) {
+            // Scroll back to the beginning
+            container.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            // Scroll to the next pair of photos
+            container.scrollTo({ left: scrollLeft + scrollDistance, behavior: 'smooth' });
+          }
+        }, 3000); // Scroll every 3 seconds
+      };
+
+      mouseEnterHandler = () => {
+        isPaused = true;
+      };
+
+      mouseLeaveHandler = () => {
+        isPaused = false;
+      };
+
+      container.addEventListener('mouseenter', mouseEnterHandler);
+      container.addEventListener('mouseleave', mouseLeaveHandler);
+      startAutoScroll();
+    }, 200); // Small delay to ensure DOM is ready
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+      if (container && mouseEnterHandler && mouseLeaveHandler) {
+        container.removeEventListener('mouseenter', mouseEnterHandler);
+        container.removeEventListener('mouseleave', mouseLeaveHandler);
+      }
+    };
+  }, [photos.length]);
+
   if (userLoading || loading) {
     return (
       <div className="card">
@@ -92,12 +160,17 @@ export default function PhotoCarousel() {
         <h2 style={{ margin: 0 }}>Party Photos</h2>
       </div>
       <div
+        ref={scrollContainerRef}
+        className="photo-carousel-scroll"
         style={{
           display: 'flex',
           overflowX: 'auto',
           gap: 12,
           scrollSnapType: 'x mandatory',
-          padding: 16,
+          padding: '0 16px',
+          scrollBehavior: 'smooth',
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // IE/Edge
         }}
       >
         {photos.map((photo, i) => {
@@ -108,9 +181,9 @@ export default function PhotoCarousel() {
           if (hiddenIds.has(photoId)) return null;
 
           return (
-            <div key={photoId} style={{ minWidth: 240, scrollSnapAlign: 'start', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--ring)', position: 'relative' }}>
+            <div key={photoId} style={{ minWidth: 'calc((100% - 12px) / 2)', width: 'calc((100% - 12px) / 2)', flexShrink: 0, scrollSnapAlign: 'start', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--ring)', position: 'relative' }} className="photo-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={`Party ${i + 1}`} onError={() => handleImageError(photoId)} style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }} />
+              <img src={src} alt={`Party ${i + 1}`} onError={() => handleImageError(photoId)} style={{ width: '100%', height: 300, objectFit: 'cover', display: 'block' }} />
 
               {/* Likes removed */}
 
