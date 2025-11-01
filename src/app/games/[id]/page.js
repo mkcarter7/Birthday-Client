@@ -24,8 +24,6 @@ export default function GameDetailPage({ params }) {
     switch (id) {
       case 'trivia':
         return 'Party Trivia';
-      case 'memory':
-        return 'Photo Memory Match';
       default:
         return `Game: ${id}`;
     }
@@ -35,8 +33,6 @@ export default function GameDetailPage({ params }) {
     switch (id) {
       case 'trivia':
         return 'Test your knowledge and earn points!';
-      case 'memory':
-        return 'Match the pairs and win points!';
       default:
         return 'Demo game screen';
     }
@@ -150,17 +146,6 @@ export default function GameDetailPage({ params }) {
 
     if (id === 'trivia') {
       return <TriviaGame onComplete={handleGameComplete} />;
-    }
-
-    if (id === 'memory') {
-      return (
-        <div className="card">
-          <p>Memory game coming soon!</p>
-          <Link href="/games" style={{ color: '#8b5cf6', textDecoration: 'none' }}>
-            ← Back to Games
-          </Link>
-        </div>
-      );
     }
 
     return (

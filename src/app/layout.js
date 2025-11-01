@@ -10,6 +10,9 @@ import '@/styles/theme.css';
 export const metadata = {
   title: PARTY_CONFIG.name,
   description: PARTY_CONFIG.welcomeMessage,
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export const viewport = {

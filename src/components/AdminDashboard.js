@@ -7,6 +7,7 @@ import { useAuth } from '@/utils/context/authContext';
 import { signIn } from '@/utils/auth';
 import { isAdmin } from '@/utils/admin';
 import { PARTY_CONFIG } from '@/config/party';
+import { getLeaderboard } from '@/utils/gameScores';
 
 export default function AdminDashboard() {
   const { user, userLoading } = useAuth();
@@ -14,10 +15,12 @@ export default function AdminDashboard() {
     rsvps: { total: 0, yes: 0, maybe: 0, no: 0, totalGuests: 0 },
     guestbook: { total: 0 },
     photos: { total: 0 },
+    games: { totalPlayers: 0, totalPoints: 0, averagePoints: 0 },
     loading: true,
   });
   const [rsvps, setRsvps] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
   const userIsAdmin = isAdmin(user);
@@ -83,6 +86,24 @@ export default function AdminDashboard() {
           }
         } catch (e) {
           console.error('Error fetching guestbook:', e);
+        }
+
+        // Fetch Game Leaderboard and Stats
+        try {
+          const lb = await getLeaderboard(user, PARTY_CONFIG.id);
+          setLeaderboard(lb);
+
+          // Calculate game stats
+          const totalPlayers = lb.length;
+          const totalPoints = lb.reduce((sum, entry) => sum + (entry.points || 0), 0);
+          const averagePoints = totalPlayers > 0 ? Math.round(totalPoints / totalPlayers) : 0;
+
+          setStats((prev) => ({
+            ...prev,
+            games: { totalPlayers, totalPoints, averagePoints },
+          }));
+        } catch (e) {
+          console.error('Error fetching leaderboard:', e);
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -204,6 +225,20 @@ export default function AdminDashboard() {
             <div style={{ fontSize: 32, fontWeight: 700, color: '#3b82f6' }}>{stats.guestbook.total}</div>
             <div style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Guestbook Messages</div>
           </div>
+          <div style={{ textAlign: 'center', padding: 16, background: 'rgba(245, 158, 11, 0.1)', borderRadius: 8 }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: '#f59e0b' }}>{stats.games.totalPlayers}</div>
+            <div style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Game Players</div>
+          </div>
+          <div style={{ textAlign: 'center', padding: 16, background: 'rgba(236, 72, 153, 0.1)', borderRadius: 8 }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: '#ec4899' }}>{stats.games.totalPoints}</div>
+            <div style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Total Points</div>
+          </div>
+          {stats.games.totalPlayers > 0 && (
+            <div style={{ textAlign: 'center', padding: 16, background: 'rgba(139, 92, 246, 0.1)', borderRadius: 8 }}>
+              <div style={{ fontSize: 32, fontWeight: 700, color: '#8b5cf6' }}>{stats.games.averagePoints}</div>
+              <div style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Avg Points/Player</div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -315,6 +350,63 @@ export default function AdminDashboard() {
         )}
       </div>
 
+      {/* Game Leaderboard */}
+      {leaderboard.length > 0 && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h3 style={{ margin: 0 }}>Game Leaderboard (Top {Math.min(leaderboard.length, 10)})</h3>
+            <Link href="/games" style={{ fontSize: 14, color: '#8b5cf6', textDecoration: 'none' }}>
+              View full leaderboard →
+            </Link>
+          </div>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {leaderboard.slice(0, 10).map((entry, index) => (
+              <div
+                key={entry.id || index}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 12,
+                  background: index < 3 ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.5)',
+                  borderRadius: 8,
+                  border: index < 3 ? '2px solid #f59e0b' : '1px solid rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: (() => {
+                        if (index === 0) return '#fbbf24';
+                        if (index === 1) return '#94a3b8';
+                        if (index === 2) return '#f97316';
+                        return 'rgba(139, 92, 246, 0.2)';
+                      })(),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      color: index < 3 ? '#fff' : '#8b5cf6',
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{entry.user_name || entry.user?.username || entry.user_email || `Player ${index + 1}`}</div>
+                    <div style={{ fontSize: 12, color: '#6b7280' }}>Level {entry.level || 1}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: '#8b5cf6' }}>{entry.points || 0}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Guestbook Messages */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -408,6 +500,20 @@ export default function AdminDashboard() {
             }}
           >
             📷 View Photos
+          </Link>
+          <Link
+            href="/games"
+            className="tile tile-orange"
+            style={{
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textDecoration: 'none',
+              border: 'none',
+            }}
+          >
+            🎮 Games & Leaderboard
           </Link>
         </div>
       </div>

@@ -7,10 +7,7 @@ import { useAuth } from '@/utils/context/authContext';
 import { PARTY_CONFIG } from '@/config/party';
 import { getUserScore, getLeaderboard } from '@/utils/gameScores';
 
-const demoGames = [
-  { id: 'trivia', name: 'Party Trivia', icon: '🧠', description: 'Test your knowledge!' },
-  { id: 'memory', name: 'Photo Memory Match', icon: '🧩', description: 'Match the pairs!' },
-];
+const demoGames = [{ id: 'trivia', name: 'Party Trivia', icon: '🧠', description: 'Test your knowledge!' }];
 
 export default function GamesPage() {
   const { user, userLoading } = useAuth();
