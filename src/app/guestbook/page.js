@@ -673,8 +673,8 @@ export default function GuestbookPage() {
                               onClick={() => handleEdit(msg)}
                               disabled={deletingId === msg.id || editingId === msg.id || savingEdit}
                               style={{
-                                background: '#6366f1',
-                                border: '1px solid #6366f1',
+                                background: PARTY_CONFIG.secondaryColor || '#8B5CF6',
+                                border: `1px solid ${PARTY_CONFIG.secondaryColor || '#8B5CF6'}`,
                                 color: 'white',
                                 cursor: deletingId === msg.id || editingId === msg.id || savingEdit ? 'not-allowed' : 'pointer',
                                 fontSize: 14,
@@ -686,12 +686,16 @@ export default function GuestbookPage() {
                               }}
                               onMouseEnter={(e) => {
                                 if (!deletingId && editingId !== msg.id && !savingEdit) {
-                                  e.target.style.background = '#4f46e5';
+                                  // Darken the secondary color for hover
+                                  const hoverColor = PARTY_CONFIG.secondaryColor || '#8B5CF6';
+                                  e.target.style.background = hoverColor;
+                                  e.target.style.filter = 'brightness(0.85)';
                                   e.target.style.transform = 'scale(1.05)';
                                 }
                               }}
                               onMouseLeave={(e) => {
-                                e.target.style.background = '#6366f1';
+                                e.target.style.background = PARTY_CONFIG.secondaryColor || '#8B5CF6';
+                                e.target.style.filter = 'none';
                                 e.target.style.transform = 'scale(1)';
                               }}
                             >
@@ -702,8 +706,8 @@ export default function GuestbookPage() {
                               onClick={() => handleDelete(msg.id)}
                               disabled={deletingId === msg.id || editingId === msg.id || savingEdit}
                               style={{
-                                background: '#ef4444',
-                                border: '1px solid #ef4444',
+                                background: PARTY_CONFIG.accentColor || '#F59E0B',
+                                border: `1px solid ${PARTY_CONFIG.accentColor || '#F59E0B'}`,
                                 color: 'white',
                                 cursor: deletingId === msg.id || editingId === msg.id || savingEdit ? 'not-allowed' : 'pointer',
                                 fontSize: 14,
@@ -715,12 +719,16 @@ export default function GuestbookPage() {
                               }}
                               onMouseEnter={(e) => {
                                 if (deletingId !== msg.id && editingId !== msg.id && !savingEdit) {
-                                  e.target.style.background = '#dc2626';
+                                  // Darken the accent color for hover
+                                  const hoverColor = PARTY_CONFIG.accentColor || '#F59E0B';
+                                  e.target.style.background = hoverColor;
+                                  e.target.style.filter = 'brightness(0.85)';
                                   e.target.style.transform = 'scale(1.05)';
                                 }
                               }}
                               onMouseLeave={(e) => {
-                                e.target.style.background = '#ef4444';
+                                e.target.style.background = PARTY_CONFIG.accentColor || '#F59E0B';
+                                e.target.style.filter = 'none';
                                 e.target.style.transform = 'scale(1)';
                               }}
                             >

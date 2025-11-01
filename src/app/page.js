@@ -7,7 +7,7 @@ import { PARTY_CONFIG, getPartyDisplayName, getPartyLocation, getPartyTheme } fr
 const tiles = [
   { href: '/calendar', label: 'Add to Calendar', color: 'green', icon: '📅' },
   { href: '/sms', label: 'Share via SMS', color: 'blue', icon: '📞' },
-  { href: '/qrcode', label: 'QR Code', color: 'purple', icon: '� QR' },
+  { href: '/qrcode', label: 'QR Code', color: 'purple', icon: '📱' },
   { href: '/live', label: 'Watch Live', color: 'blue', icon: '🔗' },
   { href: '/photos', label: 'Photos', color: 'pink', icon: '📷' },
   { href: '/gift', label: 'Send Gift', color: 'violet', icon: '🎁' },
@@ -79,7 +79,9 @@ export default function Home() {
       <section className="countdown-weather-container">
         <div className="countdown card" style={{ textAlign: 'center' }}>
           <h2>Party Countdown</h2>
-          <div className="countdown-body">🎉 The Party Has Begun!</div>
+          <div className="countdown-body" style={{ color: PARTY_CONFIG.secondaryColor || '#8B5CF6' }}>
+            🎉 The Party Has Begun!
+          </div>
           <p className="muted">Hope you&apos;re having an amazing time!</p>
         </div>
 
