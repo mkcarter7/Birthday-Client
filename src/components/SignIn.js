@@ -13,8 +13,20 @@ function Signin() {
         margin: '0 auto',
       }}
     >
-      <h1>Hi there!</h1>
-      <p>Click the button below to login!</p>
+      <h1
+        style={{
+          fontSize: '48px',
+          fontWeight: 600,
+          marginBottom: '30px',
+          color: '#8b5cf6',
+          fontFamily: 'var(--font-fredoka), "Fredoka", sans-serif',
+          letterSpacing: '1px',
+          textShadow: '2px 2px 4px rgba(139, 92, 246, 0.2)',
+        }}
+      >
+        HAPPY BIRTHDAY IVY
+      </h1>
+      <p style={{ marginBottom: '24px' }}>Click the button below to login!</p>
       <Button
         type="button"
         size="lg"
