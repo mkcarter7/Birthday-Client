@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import PageHeader from '@/components/PageHeader';
 import PhotoCarousel from '@/components/PhotoCarousel';
 import { useAuth } from '@/utils/context/authContext';
@@ -14,6 +15,59 @@ export default function PhotosPage() {
 
   // Get party configuration
   const configErrors = validatePartyConfig();
+
+  useEffect(() => {
+    // Create confetti animation on page load
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = {
+      startVelocity: 30,
+      spread: 360,
+      ticks: 60,
+      zIndex: 9999,
+    };
+
+    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+    // Use theme colors from party config, with fallback festive colors
+    const confettiColors = [
+      PARTY_CONFIG.secondaryColor || '#8B5CF6', // Purple
+      PARTY_CONFIG.primaryColor || '#3B82F6', // Blue
+      PARTY_CONFIG.accentColor || '#F59E0B', // Orange/Amber
+      '#10B981', // Green
+      '#EC4899', // Pink
+      '#FBBF24', // Yellow
+    ];
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      // Launch confetti from both sides
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: confettiColors,
+      });
+
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: confettiColors,
+      });
+    }, 250);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
 
   const handleUpload = async (e) => {
     e.preventDefault();
