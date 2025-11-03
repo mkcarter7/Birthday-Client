@@ -53,34 +53,74 @@ export default function GuestbookPage() {
 
         if (res.ok) {
           const data = await res.json();
+          console.log('Guestbook fetch - Raw data from API:', {
+            dataType: typeof data,
+            isArray: Array.isArray(data),
+            length: Array.isArray(data) ? data.length : 'not an array',
+            firstItem: Array.isArray(data) && data.length > 0 ? data[0] : null,
+          });
+
           // Filter messages for this party and sort by date (newest first)
           // Handle both string and number party IDs
           const partyId = PARTY_CONFIG.id;
+          console.log('Guestbook fetch - Party ID from config:', partyId, typeof partyId);
+
           const filtered = Array.isArray(data)
             ? data.filter((m) => {
-                if (m.deleted || m.is_deleted) return false;
+                if (m.deleted || m.is_deleted) {
+                  console.log('Guestbook fetch - Message filtered (deleted):', m.id);
+                  return false;
+                }
                 // Compare party ID handling both string and number types
                 const msgPartyId = m.party || m.party_id || m.party_name;
-                return msgPartyId === partyId || String(msgPartyId) === String(partyId);
+                const matches = msgPartyId === partyId || String(msgPartyId) === String(partyId);
+                if (!matches) {
+                  console.log('Guestbook fetch - Message filtered (party mismatch):', {
+                    messageId: m.id,
+                    msgPartyId,
+                    configPartyId: partyId,
+                    match: false,
+                  });
+                }
+                return matches;
               })
             : [];
           filtered.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
           // Debug: log fetch results
+          console.log('Guestbook fetch - Filtering summary:', {
+            totalReceived: Array.isArray(data) ? data.length : 0,
+            afterFilter: filtered.length,
+            partyId,
+          });
+
           if (filtered.length > 0) {
             console.log('Guestbook fetch - Filtered messages:', filtered.length);
             console.log('Guestbook fetch - First message:', filtered[0]);
           } else if (Array.isArray(data) && data.length > 0) {
-            console.log('Guestbook fetch - All messages filtered out. Data:', data);
-            console.log('Guestbook fetch - Looking for party ID:', partyId, typeof partyId);
-            console.log(
-              'Guestbook fetch - Message party IDs:',
-              data.map((m) => ({ id: m.id, party: m.party, party_type: typeof m.party })),
-            );
+            console.warn('⚠️ Guestbook fetch - All messages filtered out!', {
+              totalMessages: data.length,
+              lookingForPartyId: partyId,
+              partyIdType: typeof partyId,
+              messagePartyIds: data.map((m) => ({
+                id: m.id,
+                party: m.party,
+                party_id: m.party_id,
+                party_name: m.party_name,
+                party_type: typeof (m.party || m.party_id),
+              })),
+            });
+          } else if (!Array.isArray(data) || data.length === 0) {
+            console.warn('⚠️ Guestbook fetch - No messages received from backend');
           }
           setMessages(filtered);
         } else if (res.status === 403) {
-          // If unauthorized, show empty list
-          console.warn('Guestbook fetch - 403 Unauthorized');
+          // If unauthorized, show empty list but log the issue
+          console.error('⚠️ Guestbook fetch - 403 Unauthorized. Messages cannot be loaded.', {
+            user: user ? { email: user.email, uid: user.uid } : null,
+            isSignedIn: !!user,
+          });
+          setError('Unable to load messages. You may not have permission to view the guestbook.');
           setMessages([]);
         } else {
           console.error('Guestbook fetch - Error response:', res.status);

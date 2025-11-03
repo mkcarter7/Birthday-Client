@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [deletingMsgId, setDeletingMsgId] = useState(null);
 
   const userIsAdmin = isAdmin(user);
 
@@ -145,6 +146,85 @@ export default function AdminDashboard() {
         return "Sorry, can't make it";
       default:
         return status;
+    }
+  };
+
+  const handleDeleteMessage = async (msgId) => {
+    // eslint-disable-next-line no-alert
+    if (!window.confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingMsgId(msgId);
+
+    try {
+      if (!user) {
+        alert('You must be signed in to delete messages.');
+        setDeletingMsgId(null);
+        return;
+      }
+
+      const token = await user.getIdToken(true);
+      console.log('Admin Dashboard - Attempting to delete message:', msgId);
+      console.log('Admin Dashboard - User:', user.email, user.uid);
+
+      const res = await fetch(`/api/guestbook/${msgId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Log the full response
+      console.log('Admin Dashboard - Response status:', res.status);
+      console.log('Admin Dashboard - Response headers:', [...res.headers.entries()]);
+
+      const data = await res.json().catch(() => ({})); // Get JSON or empty object
+      console.log('Admin Dashboard - Response data:', data);
+
+      if (res.ok) {
+        console.log('✅ Message deleted successfully');
+        // Remove the message from the list
+        setMessages(messages.filter((msg) => msg.id !== msgId));
+      } else {
+        console.error('Admin Dashboard - Delete failed:', {
+          status: res.status,
+          statusText: res.statusText,
+          data,
+          is_admin: data.is_admin,
+          is_author: data.is_author,
+          user_id: data.user_id,
+          username: data.username,
+          messageId: msgId,
+          userEmail: user.email,
+          userUid: user.uid,
+        });
+
+        let errorMessage = data.error || data.detail || data.message || 'Failed to delete message.';
+        const errorDetails = data.details || '';
+
+        if (res.status === 403) {
+          errorMessage += '\n\n⚠️ 403 Forbidden Error';
+          errorMessage += '\n\nThe backend is rejecting the delete request.';
+          if (data.is_admin !== undefined) {
+            errorMessage += `\n\nBackend says you are admin: ${data.is_admin}`;
+          }
+          if (data.is_author !== undefined) {
+            errorMessage += `\nBackend says you are author: ${data.is_author}`;
+          }
+          if (errorDetails) {
+            errorMessage += `\n\nBackend error: ${errorDetails}`;
+          }
+        }
+
+        alert(`${errorMessage}\n\nStatus: ${res.status}${errorDetails ? `\nDetails: ${errorDetails}` : ''}`);
+      }
+    } catch (err) {
+      console.error('Error deleting message:', err);
+      alert('Failed to delete message. Please try again.');
+    } finally {
+      setDeletingMsgId(null);
     }
   };
 
@@ -432,16 +512,48 @@ export default function AdminDashboard() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                   <div style={{ fontWeight: 600, fontSize: 16, color: '#4338ca' }}>{getAuthorName(msg)}</div>
-                  {msg.created_at && (
-                    <div style={{ fontSize: 12, color: '#6b7280' }}>
-                      {new Date(msg.created_at || msg.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </div>
-                  )}
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {msg.created_at && (
+                      <div style={{ fontSize: 12, color: '#6b7280' }}>
+                        {new Date(msg.created_at || msg.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteMessage(msg.id)}
+                      disabled={deletingMsgId === msg.id}
+                      style={{
+                        background: '#ef4444',
+                        border: '1px solid #ef4444',
+                        color: 'white',
+                        cursor: deletingMsgId === msg.id ? 'not-allowed' : 'pointer',
+                        fontSize: 12,
+                        padding: '4px 8px',
+                        borderRadius: 6,
+                        fontWeight: 500,
+                        opacity: deletingMsgId === msg.id ? 0.6 : 1,
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (deletingMsgId !== msg.id) {
+                          e.target.style.background = '#dc2626';
+                          e.target.style.transform = 'scale(1.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = '#ef4444';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                      title="Delete this message"
+                    >
+                      {deletingMsgId === msg.id ? '⏳' : '🗑️'}
+                    </button>
+                  </div>
                 </div>
                 <div style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{msg.message || msg.text || 'No message content'}</div>
               </div>

@@ -11,22 +11,51 @@ export async function GET(request) {
       headers.Authorization = authHeader;
     }
 
+    console.log('Guestbook API GET - Making request to:', url);
+    console.log('Guestbook API GET - Headers:', {
+      hasAuth: !!authHeader,
+      authPreview: authHeader ? `${authHeader.substring(0, 30)}...` : 'none',
+    });
+
     const res = await fetch(url, {
       headers,
       next: { revalidate: 60 },
     });
 
+    console.log('Guestbook API GET - Response status:', res.status, res.statusText);
+
     if (!res.ok) {
-      // Return empty array for 403 instead of error
+      // Log 403 errors with details
       if (res.status === 403) {
+        console.error('⚠️ Guestbook API - 403 Forbidden from backend:', {
+          url,
+          hasAuthHeader: !!authHeader,
+          status: res.status,
+        });
+        // Still return empty array to prevent breaking the UI, but log the issue
         return Response.json([]);
       }
-      return Response.json({ error: 'Upstream error' }, { status: res.status });
+      const errorText = await res.text().catch(() => 'Unknown error');
+      console.error('Guestbook API - Backend error:', {
+        status: res.status,
+        error: errorText,
+        url,
+      });
+      return Response.json({ error: 'Upstream error', details: errorText }, { status: res.status });
     }
 
     const data = await res.json();
     // Normalize to an array of message objects
     const messages = Array.isArray(data) ? data : data?.messages || data?.results || [];
+
+    // Debug logging
+    console.log('Guestbook API - Backend returned:', {
+      isArray: Array.isArray(data),
+      messageCount: messages.length,
+      firstMessage: messages[0] || null,
+      allData: data,
+    });
+
     return Response.json(messages);
   } catch (e) {
     return Response.json({ error: 'Guestbook service unavailable' }, { status: 502 });

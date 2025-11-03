@@ -1,6 +1,8 @@
 export async function DELETE(request, { params }) {
   const base = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || '';
-  const url = `${base.replace(/\/$/, '')}/api/guestbook/${params.id}/`;
+  // Await params if it's a Promise (Next.js 14+)
+  const resolvedParams = await params;
+  const url = `${base.replace(/\/$/, '')}/api/guestbook/${resolvedParams.id}/`;
 
   try {
     // Handle both lowercase and capitalized Authorization header
@@ -14,14 +16,46 @@ export async function DELETE(request, { params }) {
       Authorization: authHeader,
     };
 
+    console.log('Guestbook DELETE - Making request to:', url);
+    console.log('Guestbook DELETE - Has auth header:', !!authHeader);
+
     const res = await fetch(url, {
       method: 'DELETE',
       headers,
     });
 
+    console.log('Guestbook DELETE - Response status:', res.status, res.statusText);
+
     if (!res.ok) {
-      const errorText = await res.text();
-      return Response.json({ error: `Failed to delete message: ${res.status} ${errorText}` }, { status: res.status });
+      let errorText;
+      try {
+        errorText = await res.text();
+        // Try to parse as JSON for better error message
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorText = errorJson.error || errorJson.details || errorText;
+        } catch {
+          // Keep as text if not JSON
+        }
+      } catch (e) {
+        errorText = `Status ${res.status}`;
+      }
+
+      console.error('Backend DELETE error:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errorText,
+        url,
+      });
+
+      return Response.json(
+        {
+          error: `Failed to delete message: ${res.status}`,
+          details: errorText,
+          status: res.status,
+        },
+        { status: res.status },
+      );
     }
 
     return Response.json({ success: true });
@@ -32,7 +66,9 @@ export async function DELETE(request, { params }) {
 
 export async function PATCH(request, { params }) {
   const base = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || '';
-  const url = `${base.replace(/\/$/, '')}/api/guestbook/${params.id}/`;
+  // Await params if it's a Promise (Next.js 14+)
+  const resolvedParams = await params;
+  const url = `${base.replace(/\/$/, '')}/api/guestbook/${resolvedParams.id}/`;
 
   try {
     const body = await request.json();
