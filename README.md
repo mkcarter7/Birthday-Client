@@ -1,61 +1,147 @@
-# NextJS with Firebase Auth App Router Template
+# Birthday Party Website 🎉
 
-[See Live Demo of this Template](https://drt-next-js-template-app-router.netlify.app/)
+A full-featured, customizable birthday party website built with Next.js, Firebase Authentication, and React. Perfect for creating a beautiful, interactive celebration experience for guests.
 
-## Topics
-- [Get Started](#get-started)
-- [Starting the Project](#starting-the-project)
-- [Deploying on Netlify](#deploying-on-netlify)
-___
-## Getting Started
-### Use Template
-#### 1. To get started, click the GREEN "Use this Template" button at the top of the repo
-<img width="915" alt="Screen Shot 2022-07-06 at 12 54 01 PM" src="https://user-images.githubusercontent.com/29741570/177612998-4aac9237-5a1e-4f13-8ae0-468587521564.png">
+## ✨ Features
 
-#### 2. Make sure YOUR github account is selected in the dropdown and name your project
-<img width="763" alt="Screen Shot 2022-07-06 at 12 54 48 PM" src="https://user-images.githubusercontent.com/29741570/177613126-dd38f678-7553-4f27-8a4a-75680f14d71e.png">
+### 🎊 Guest Features
+- **RSVP Management** - Easy RSVP system with guest count and dietary restrictions
+- **Photo Gallery** - Upload and browse party photos with likes
+- **Interactive Games** - Play trivia games and earn points on the leaderboard
+- **Guestbook** - Leave messages and memories for the party
+- **Party Information** - Date, time, location with interactive maps
+- **Social Sharing** - Share via SMS, QR code, and calendar integration
+- **Live Updates** - Facebook Live integration for remote guests
+- **Gift Registry** - Venmo integration for gift contributions
 
-#### 3. Clone your new repo to your local machine
-#### 4. Go to the **NEXT** section
+### 👨‍💼 Admin Features
+- **Admin Dashboard** - Complete overview of RSVPs, guestbook, photos, and game stats
+- **Statistics** - Real-time analytics and party metrics
+- **Leaderboard Management** - View game scores and player rankings
+- **Data Export** - Access all party data in one place
 
-## Starting the Project
-1. Create a Firebase project and set up authentication. Use [these videos](https://vimeo.com/showcase/codetracker-firebase) as a refresher if needed.
-1. Create a `.env` file at the root of the project
-1. Copy/Paste the contents of the `.env.sample` file to your newly created `.env` file.
-1. Copy over all of your Firebase values into the `.env` file.
-1. Open the `package.json` file and change the `name` property to the name of your application, and `author` to  your name.
-1. From your command line, be in the root directory and run `npm install` OR `npm i` for short.
-1. Next, run `npm run prepare`. This command sets up husky to track eslint errors on commit that will make your deploy fail on Netlify.
-1. Run `npx eslint . --ext .js,.jsx`
-1. To start your application, run `npm run dev`. THIS IS THE COMMAND YOU WILL USE TO RUN YOUR DEVELOPMENT SERVER FROM NOW ON.
-1. Open [http://localhost:3000](http://localhost:3000) with your browser.
+### 🎨 Customization
+- **Theme Colors** - Fully customizable color scheme
+- **Party Branding** - Custom fonts, messages, and styling
+- **Feature Toggles** - Enable/disable features as needed
+- **Responsive Design** - Beautiful on all devices
 
-### If you see this, you are set to go!
-<img width="450" alt="Screen Shot 2022-07-06 at 1 07 27 PM" src="https://github.com/user-attachments/assets/deae25f0-01d5-44b4-be60-7297b0f6f0ef">
+## 🚀 Tech Stack
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- **Frontend Framework:** Next.js 14 (App Router)
+- **UI Library:** React 18
+- **Styling:** Bootstrap 5, React Bootstrap
+- **Authentication:** Firebase Auth (Google Sign-In)
+- **Animation:** Canvas Confetti
+- **Backend API:** Django REST Framework (separate repository)
 
-**NOTES:** 
-- If you see the following error, you did not follow all the setup steps correctly and failed to add your Firebase creds. Go back and do that NOW.
+## 📋 Prerequisites
 
-<img width="1043" alt="Screen Shot 2022-07-06 at 11 18 45 AM" src="https://user-images.githubusercontent.com/29741570/177612501-c2628f18-4bbd-4de9-aae6-27ffba1172d6.png">
+Before you begin, ensure you have:
 
-### Deploying on Netlify
-Netlify will automatically detect your project and prepopulate the settings, but should something go wrong and it does not, here are the commands:
+- **Node.js** 18+ installed ([Download](https://nodejs.org/))
+- **npm** or **yarn** package manager
+- **Firebase account** ([Get started](https://firebase.google.com/))
+- **Django backend** running (see backend repository)
 
-- Build Command: `npm run build`
-- Publish directory: `.next`
+## 🛠️ Installation
 
-#### Additional Steps to Take on Netlify
-- Add Environmental Variables
-    - Any Enviromental variables you are using in your `.env` file should be added to Netlify. 
-        - Go to Site settings > Build & deploy > Environment > Environment variables and the keys and values there if you did not add them when you were deploying your site
+### 1. Clone the Repository
 
-- Update Firebase URL Settings
-    - In Firebase under Authentication select sign in methods, scroll to Authorized domains. Add your Netlify URL.
-        
-## Learn More about Next.js
-To learn more about Next.js, take a look at the following resources:
+```bash
+git clone https://github.com/yourusername/Birthday-Client.git
+cd Birthday-Client
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Set Up Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp env.example .env.local
+```
+
+Edit `.env.local` and add your configuration:
+
+```bash
+# Required: Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+
+# Required: Backend Configuration
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_PARTY_ID=your-party-uuid-here
+
+# Party Details
+NEXT_PUBLIC_PARTY_NAME=Your Party Name
+NEXT_PUBLIC_PARTY_DATE=Jan 1, 2025
+NEXT_PUBLIC_PARTY_TIME=7:00 PM - 11:00 PM
+NEXT_PUBLIC_PARTY_LOCATION=123 Main St, City, State 12345
+NEXT_PUBLIC_PARTY_THEME=Your Theme
+
+# Admin Access (optional)
+NEXT_PUBLIC_ADMIN_EMAILS=admin@example.com
+
+# Theme Colors (optional)
+NEXT_PUBLIC_PRIMARY_COLOR=#3B82F6
+NEXT_PUBLIC_SECONDARY_COLOR=#8B5CF6
+NEXT_PUBLIC_ACCENT_COLOR=#F59E0B
+```
+
+### 4. Set Up Firebase
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select an existing one
+3. Enable **Authentication** > **Sign-in method** > **Google**
+4. Get your Firebase config from **Project Settings** > **General**
+5. Add `localhost` to **Authentication** > **Settings** > **Authorized domains**
+
+### 5. Set Up Husky (Git Hooks)
+
+```bash
+npm run prepare
+```
+
+### 6. Start Development Server
+
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to see your site! 🎉
+
+## 🚢 Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import project in [Vercel](https://vercel.com)
+3. Add all environment variables
+4. Deploy!
+
+### Deploy to Netlify
+
+1. Build command: `npm run build`
+2. Publish directory: `.next`
+3. Add environment variables in Netlify dashboard
+4. Add your domain to Firebase authorized domains
+
+### Environment Variables for Production
+
+Make sure to add all environment variables from `.env.local` to your hosting platform's dashboard.
+
+## 📝 License
+
+This project is private and proprietary.
+
+Happy celebrating! 🎊🎂🎈
