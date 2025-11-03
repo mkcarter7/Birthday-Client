@@ -15,14 +15,9 @@ export async function GET(request) {
       Authorization: authHeader,
     };
 
-    console.log('Check Admin - Making request to:', url);
-    console.log('Check Admin - Has auth header:', !!authHeader);
-
     const res = await fetch(url, {
       headers,
     });
-
-    console.log('Check Admin - Response status:', res.status);
 
     if (!res.ok) {
       const errorText = await res.text().catch(() => 'Unknown error');
@@ -41,7 +36,6 @@ export async function GET(request) {
     }
 
     const data = await res.json();
-    console.log('Check Admin - Backend response:', data);
     return Response.json(data);
   } catch (e) {
     console.error('Check Admin - Exception:', e);

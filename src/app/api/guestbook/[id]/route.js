@@ -16,15 +16,10 @@ export async function DELETE(request, { params }) {
       Authorization: authHeader,
     };
 
-    console.log('Guestbook DELETE - Making request to:', url);
-    console.log('Guestbook DELETE - Has auth header:', !!authHeader);
-
     const res = await fetch(url, {
       method: 'DELETE',
       headers,
     });
-
-    console.log('Guestbook DELETE - Response status:', res.status, res.statusText);
 
     if (!res.ok) {
       let errorText;

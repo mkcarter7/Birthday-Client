@@ -80,12 +80,7 @@ export default function PhotosPage() {
     setMessage('');
 
     try {
-      console.log('Starting upload...');
-      console.log('Form data:', Object.fromEntries(formData.entries()));
-
       const token = await user.getIdToken(true);
-      console.log('User token:', token ? 'Generated' : 'Failed to generate');
-      console.log('Token preview:', token ? `${token.substring(0, 20)}...` : 'No token');
 
       const res = await fetch('/api/photos', {
         method: 'POST',
@@ -95,9 +90,7 @@ export default function PhotosPage() {
         body: formData,
       });
 
-      console.log('Upload response status:', res.status);
       const data = await res.json();
-      console.log('Upload response data:', data);
 
       if (res.ok) {
         setMessage('Photo uploaded successfully!');

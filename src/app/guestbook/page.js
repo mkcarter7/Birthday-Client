@@ -53,66 +53,31 @@ export default function GuestbookPage() {
 
         if (res.ok) {
           const data = await res.json();
-          console.log('Guestbook fetch - Raw data from API:', {
-            dataType: typeof data,
-            isArray: Array.isArray(data),
-            length: Array.isArray(data) ? data.length : 'not an array',
-            firstItem: Array.isArray(data) && data.length > 0 ? data[0] : null,
-          });
 
           // Filter messages for this party and sort by date (newest first)
           // Handle both string and number party IDs
           const partyId = PARTY_CONFIG.id;
-          console.log('Guestbook fetch - Party ID from config:', partyId, typeof partyId);
 
           const filtered = Array.isArray(data)
             ? data.filter((m) => {
                 if (m.deleted || m.is_deleted) {
-                  console.log('Guestbook fetch - Message filtered (deleted):', m.id);
                   return false;
                 }
                 // Compare party ID handling both string and number types
                 const msgPartyId = m.party || m.party_id || m.party_name;
-                const matches = msgPartyId === partyId || String(msgPartyId) === String(partyId);
-                if (!matches) {
-                  console.log('Guestbook fetch - Message filtered (party mismatch):', {
-                    messageId: m.id,
-                    msgPartyId,
-                    configPartyId: partyId,
-                    match: false,
-                  });
-                }
-                return matches;
+                return msgPartyId === partyId || String(msgPartyId) === String(partyId);
               })
             : [];
           filtered.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
 
-          // Debug: log fetch results
-          console.log('Guestbook fetch - Filtering summary:', {
-            totalReceived: Array.isArray(data) ? data.length : 0,
-            afterFilter: filtered.length,
-            partyId,
-          });
-
-          if (filtered.length > 0) {
-            console.log('Guestbook fetch - Filtered messages:', filtered.length);
-            console.log('Guestbook fetch - First message:', filtered[0]);
-          } else if (Array.isArray(data) && data.length > 0) {
-            console.warn('⚠️ Guestbook fetch - All messages filtered out!', {
+          // Only warn if there's an issue
+          if (Array.isArray(data) && data.length > 0 && filtered.length === 0) {
+            console.warn('⚠️ Guestbook - All messages filtered out (party ID mismatch)', {
               totalMessages: data.length,
-              lookingForPartyId: partyId,
-              partyIdType: typeof partyId,
-              messagePartyIds: data.map((m) => ({
-                id: m.id,
-                party: m.party,
-                party_id: m.party_id,
-                party_name: m.party_name,
-                party_type: typeof (m.party || m.party_id),
-              })),
+              partyId,
             });
-          } else if (!Array.isArray(data) || data.length === 0) {
-            console.warn('⚠️ Guestbook fetch - No messages received from backend');
           }
+
           setMessages(filtered);
         } else if (res.status === 403) {
           // If unauthorized, show empty list but log the issue
@@ -176,36 +141,11 @@ export default function GuestbookPage() {
         if (!token) {
           throw new Error('Failed to get authentication token');
         }
-        console.log('Guestbook submit - Token generated successfully');
-        console.log('Guestbook submit - Token preview:', `${token.substring(0, 30)}...`);
-        console.log('Guestbook submit - Token length:', token.length);
-        console.log('Guestbook submit - User UID:', user.uid);
-        console.log('Guestbook submit - User email:', user.email);
-
-        // Decode token to check its structure (first part is header, second is payload)
-        try {
-          const tokenParts = token.split('.');
-          if (tokenParts.length === 3) {
-            const payload = JSON.parse(atob(tokenParts[1]));
-            console.log('Guestbook submit - Token payload preview:', {
-              iss: payload.iss,
-              aud: payload.aud,
-              exp: payload.exp,
-              iat: payload.iat,
-              user_id: payload.user_id || payload.sub,
-              email: payload.email,
-            });
-          }
-        } catch (decodeError) {
-          console.warn('Could not decode token:', decodeError);
-        }
       } catch (tokenError) {
         console.error('Token error:', tokenError);
         setError('Authentication error. Please try signing out and signing back in.');
         return;
       }
-
-      console.log('Guestbook submit - Making POST request with token');
 
       const res = await fetch('/api/guestbook', {
         method: 'POST',
@@ -220,18 +160,7 @@ export default function GuestbookPage() {
         }),
       });
 
-      console.log('Guestbook submit - Response status:', res.status);
-
       const data = await res.json();
-
-      console.log('Guestbook submit - Full response data:', data);
-      console.log('Guestbook submit - Response name fields:', {
-        name: data.name,
-        author_name: data.author_name,
-        author: data.author,
-        full_name: data.full_name,
-        username: data.username,
-      });
 
       if (res.ok) {
         // Add the new message to the list
@@ -623,20 +552,6 @@ export default function GuestbookPage() {
             {messages.map((msg) => {
               const isOwner = isMessageOwner(msg);
               const isEditing = editingId === msg.id;
-
-              // Debug: log ownership check for all messages in development
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`Message ${msg.id} ownership check:`, {
-                  messageId: msg.id,
-                  isOwner,
-                  willShowButtons: isOwner && !!user,
-                  userLoggedIn: !!user,
-                  userEmail: user?.email,
-                  messageAuthor: msg.author,
-                  messageAuthorEmail: msg.author?.email || msg.author_email,
-                  messageName: msg.name,
-                });
-              }
 
               return (
                 <div

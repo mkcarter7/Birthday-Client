@@ -39,11 +39,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    console.log('RSVP POST - Request body:', body);
     const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
 
     if (!authHeader) {
-      console.warn('RSVP POST - No authorization header provided');
       return Response.json(
         {
           error: 'Authentication required',
@@ -58,18 +56,11 @@ export async function POST(request) {
       Authorization: authHeader,
     };
 
-    console.log('RSVP POST - Headers being sent:', {
-      'Content-Type': headers['Content-Type'],
-      Authorization: headers.Authorization ? `${headers.Authorization.substring(0, 30)}...` : 'None',
-    });
-
     const res = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
     });
-
-    console.log('RSVP POST - Response status:', res.status);
 
     if (!res.ok) {
       let errorText;
@@ -90,7 +81,6 @@ export async function POST(request) {
     }
 
     const data = await res.json();
-    console.log('RSVP POST - Success response:', data);
     return Response.json(data);
   } catch (e) {
     console.error('RSVP POST - Exception:', e);

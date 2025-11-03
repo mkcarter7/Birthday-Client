@@ -165,8 +165,6 @@ export default function AdminDashboard() {
       }
 
       const token = await user.getIdToken(true);
-      console.log('Admin Dashboard - Attempting to delete message:', msgId);
-      console.log('Admin Dashboard - User:', user.email, user.uid);
 
       const res = await fetch(`/api/guestbook/${msgId}`, {
         method: 'DELETE',
@@ -176,15 +174,9 @@ export default function AdminDashboard() {
         },
       });
 
-      // Log the full response
-      console.log('Admin Dashboard - Response status:', res.status);
-      console.log('Admin Dashboard - Response headers:', [...res.headers.entries()]);
-
       const data = await res.json().catch(() => ({})); // Get JSON or empty object
-      console.log('Admin Dashboard - Response data:', data);
 
       if (res.ok) {
-        console.log('✅ Message deleted successfully');
         // Remove the message from the list
         setMessages(messages.filter((msg) => msg.id !== msgId));
       } else {
